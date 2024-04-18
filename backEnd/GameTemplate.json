@@ -1,0 +1,17 @@
+[
+    {
+        "game_id": 0,
+        "name": "Minecraft",
+        "price": 20.00,
+        "desc": "A survival game with blocks!",
+        "studio": "Mojang"
+    },
+
+    {
+        "game_id": 1,
+        "name": "Skyrim",
+        "price": 60.00,
+        "desc": "Fantasy RPG game",
+        "studio": "Bethesda"
+    }
+]
