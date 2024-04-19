@@ -6,18 +6,22 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 const mongoose = require('mongoose');
 const dotenv = require("dotenv").config();
 
-const uri = process.env.uri;
-
 
 
 var app = express();
 
 const port = 3000;
 
-app.use(express.static('public'))
+app.use(express.static('public'));
+
+const uri = process.env.uri;
 
 
 app.get('/getUsers', (req, res) => {
+    res.statusCode = 200;
+    res.setHeader('Content-type', null);
+
+    res.setHeader('Access-Control-Allow-Origin', '*');
     const client = new MongoClient(uri, {
         serverApi: {
             version: ServerApiVersion.v1,
@@ -33,8 +37,8 @@ app.get('/getUsers', (req, res) => {
           // Send a ping to confirm a successful connection
           await client.db("ETI461").command({ ping: 1 });
           console.log("Pinged your deployment. You successfully connected to MongoDB!");
-          const items = client.db("ETI461").collection("Users").find().toArray();
-          res.json(items)
+          const items = await client.db("ETI461").collection("Users").find().toArray();
+          res.json(items);
         } finally {
           // Ensures that the client will close when you finish/error
           await client.close();
