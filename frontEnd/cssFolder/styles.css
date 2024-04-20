@@ -86,3 +86,14 @@ a{
     text-align: center;
     justify-content: center;
 }
+
+table, th, td{
+    border: 1px solid;
+    justify-content: center;
+    
+}
+
+.container{
+    justify-content: center;
+    
+}

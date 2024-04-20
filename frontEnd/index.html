@@ -1,34 +1,36 @@
 <!DOCTYPE html>
-<html lang = "en">
+<html lang="en">
 <head>
-    <link rel = "stylesheet" href = "cssFolder/styles.css">
+    <link rel="stylesheet" href="cssFolder/styles.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="../backEnd/index.js"></script>
 </head>
-
-
-
-
-
-<header>
-    <nav class = "navbar">
-        <a class = "brand" href = "index.html">GameStop</a>
-        <ul>
-            <li>
-                <a class = "active" href = "index.html">Games</a>
-            </li>
-
-            <li>
-                <a href = "shoppingCart.html">Cart</a>
-            </li>
-            <li>
-                <a href = "signIn.html">Sign Out</a>
-            </li>
-        
-        </ul>
-    </nav>
-</header>
 <body>
+    <header>
+        <nav class="navbar">
+            <a class="brand" href="index.html">GameStop</a>
+            <ul>
+                <li>
+                    <a class="active" href="index.html">Games</a>
+                </li>
+                <li>
+                    <a href="shoppingCart.html">Cart</a>
+                </li>
+                <li>
+                    <a href="signIn.html">Sign Out</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <div class="container">
+        <h1>Games:</h1>
+        <div id="gameList"></div>
+    </div>
 
-
-
-
+    <script>
+        window.onload = function() {
+            loadTable();
+        };
+    </script>
 </body>
+</html>

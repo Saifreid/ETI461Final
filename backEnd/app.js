@@ -14,12 +14,13 @@ const port = 3000;
 app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 
 
 
 const uri = process.env.uri;
 
-
+//Basic function that gets the list of users not used in the project.
 app.get('/getUsers', (req, res) => {
     res.statusCode = 200;
     res.setHeader('Content-type', 'application/json');
@@ -80,6 +81,8 @@ app.post('/addUser', async function(req, res) {
     run().catch(console.dir);
 })
 
+
+//Verifies the username and password login credentials on signIn.html
 app.post('/checkLogin', async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', "*");
@@ -122,7 +125,7 @@ app.post('/checkLogin', async (req, res) => {
 });
 
 
-
+//Adds a new entry to the database with a new username, password, and an empty cart
 app.post('/registerUser', async function(req, res) {
     const {MongoClient, ServerApiVersion} = require('mongodb');
     const uri = process.env.uri;
@@ -169,6 +172,68 @@ app.post('/registerUser', async function(req, res) {
 })
 
 
+//Retrieves the list of games from the database
+app.get('/getGames', (req, res) => {
+    res.statusCode = 200;
+    res.setHeader('Content-type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    const { MongoClient, ServerApiVersion } = require('mongodb');
+    const client = new MongoClient(uri, {
+        serverApi: {
+            version: ServerApiVersion.v1,
+            strict: true,
+            deprecationErrors: true,
+        }
+    });
+
+      async function run() {
+        try {
+          // Connect the client to the server	(optional starting in v4.7)
+          await client.connect();
+          // Send a ping to confirm a successful connection
+          await client.db("ETI461").command({ ping: 1 });
+          console.log("Pinged your deployment. You successfully connected to MongoDB!");
+          const items = await client.db("ETI461").collection("Games").find().toArray();
+          res.json(items);
+        } finally {
+          // Ensures that the client will close when you finish/error
+          await client.close();
+        }
+      }
+      run().catch(console.dir);
+})
+
+app.post('/addToCart', (req, res) => {
+    res.statusCode = 200;
+    res.setHeader('Content-type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    const { MongoClient, ServerApiVersion } = require('mongodb');
+    const client = new MongoClient(uri, {
+        serverApi: {
+            version: ServerApiVersion.v1,
+            strict: true,
+            deprecationErrors: true,
+        }
+    });
+    async function run() {
+        try {
+          // Connect the client to the server	(optional starting in v4.7)
+          await client.connect();
+          // Send a ping to confirm a successful connection
+          await client.db("ETI461").command({ ping: 1 });
+          console.log("Pinged your deployment. You successfully connected to MongoDB!");
+          console.log(req.cookies.user);
+          const items = await client.db("ETI461").collection("Games").findOne(req.cookies.user);
+          res.json(items);
+        } finally {
+          // Ensures that the client will close when you finish/error
+          await client.close();
+        }
+      }
+      run().catch(console.dir);
+})
+
+ 
 
 
 
