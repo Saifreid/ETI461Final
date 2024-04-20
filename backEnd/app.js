@@ -1,5 +1,6 @@
 var createError = require('http-errors');
 var express = require('express');
+const session = require('express-session');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 const { MongoClient, ServerApiVersion } = require('mongodb');
@@ -15,6 +16,12 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
+
+app.use(session({
+    secret: process.env.session_secret,
+    resave: false,
+    saveUninitialized: true
+}));
 
 
 
@@ -89,6 +96,12 @@ app.post('/checkLogin', async (req, res) => {
 
     const bcrypt = require('bcrypt');
     const uri = process.env.uri;
+    const session = require('express-session');
+    app.use(session({
+        secret: process.env.session_secret,
+        resave: false,
+        saveUninitialized: true
+    }));
     const { MongoClient, ServerApiVersion } = require('mongodb');
     const client = new MongoClient(uri, {
         serverApi: {
@@ -108,8 +121,12 @@ app.post('/checkLogin', async (req, res) => {
         if (result) {
             const passwordMatch = await bcrypt.compare(req.body.password, result.password);
             if (passwordMatch) {
-                res.cookie("user", result.username, { maxAge: 1000 * 60 * 60 * 24 });
-                res.cookie("pass", result.password, { maxAge: 1000 * 60 * 60 * 24 });
+                console.log(result.username);
+                req.session.user = result.username;
+                console.log("Session SET");
+
+                // res.cookie("user", result.username, { maxAge: 1000 * 60 * 60 * 24 });
+                // res.cookie("pass", result.password, { maxAge: 1000 * 60 * 60 * 24 });
                 res.json([true, "user=" + result.username + "&pass=" + result.password]);
             } else {
                 res.json([false]);
@@ -207,6 +224,12 @@ app.post('/addToCart', (req, res) => {
     res.statusCode = 200;
     res.setHeader('Content-type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', '*');
+    const session = require('express-session');
+    app.use(session({
+        secret: process.env.session_secret,
+        resave: false,
+        saveUninitialized: true
+    }));
     const { MongoClient, ServerApiVersion } = require('mongodb');
     const client = new MongoClient(uri, {
         serverApi: {
@@ -222,9 +245,15 @@ app.post('/addToCart', (req, res) => {
           // Send a ping to confirm a successful connection
           await client.db("ETI461").command({ ping: 1 });
           console.log("Pinged your deployment. You successfully connected to MongoDB!");
-          console.log(req.cookies.user);
-          const items = await client.db("ETI461").collection("Games").findOne(req.cookies.user);
+          user = req.session.user;
+          console.log(user);
+          const items = await client.db("ETI461").collection("Users").findOne({username: "admin"}); //hard coded for now edit this later
+          let mycart = items.cart;
+          mycart.push(req.body);
+          const items2 = await client.db("ETI461").collection("Users").updateOne({username: "admin"}, {$set: {cart: mycart}} ) //hard coded for now edit this later
           res.json(items);
+
+
         } finally {
           // Ensures that the client will close when you finish/error
           await client.close();

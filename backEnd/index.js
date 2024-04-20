@@ -3,21 +3,10 @@
 
 
 
-function getCookie(name){
-    let cookieArr = document.cookie.split(";");
-    for (const cookie of cookieArr){
-        let cookiePair = cookie.split('=');
-        if(name == cookiePair[0].trim()){
-            return decodeURIComponent(cookiePair[1]);
-        }
-    }
-}
 
 
 function addToCart(item){
-    let userCookie = getCookie("user");
-    console.log(userCookie);
-    $.post('http://localhost:3000/addToCart',item, document.cookie, function(data) {
+    $.post('http://localhost:3000/addToCart',item, function(data) {
         console.log(data);
         console.log("Added to cart");
     });
