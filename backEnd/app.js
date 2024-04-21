@@ -27,6 +27,23 @@ app.use(session({
 
 const uri = process.env.uri;
 
+function isEqual(item1, item2){
+    if (JSON.stringify(item1) == JSON.stringify(item2)){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+function getJsonIndex(cartList, target){
+    for(let i = 0; i < cartList.length; i++){
+        if(isEqual(cartList[i], target)){
+            return i
+        }
+    }
+    return -1
+}
+
 //Basic function that gets the list of users not used in the project.
 app.get('/getUsers', (req, res) => {
     res.statusCode = 200;
@@ -262,9 +279,124 @@ app.post('/addToCart', (req, res) => {
       run().catch(console.dir);
 })
 
+
+app.post('/removeFromCart', (req, res) => {
+    res.statusCode = 200;
+    res.setHeader('Content-type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    const session = require('express-session');
+    app.use(session({
+        secret: process.env.session_secret,
+        resave: false,
+        saveUninitialized: true
+    }));
+    const { MongoClient, ServerApiVersion } = require('mongodb');
+    const client = new MongoClient(uri, {
+        serverApi: {
+            version: ServerApiVersion.v1,
+            strict: true,
+            deprecationErrors: true,
+        }
+    });
+    async function run() {
+        try {
+          // Connect the client to the server	(optional starting in v4.7)
+          await client.connect();
+          // Send a ping to confirm a successful connection
+          await client.db("ETI461").command({ ping: 1 });
+          console.log("Pinged your deployment. You successfully connected to MongoDB!");
+          user = req.session.user;
+          console.log(user);
+          const items = await client.db("ETI461").collection("Users").findOne({username: "admin"}); //hard coded for now edit this later
+          let mycart = items.cart;
+          console.log(mycart);
+          console.log("this is req body");
+          console.log(req.body);
+          itemIndex = getJsonIndex(mycart ,req.body);
+          console.log(itemIndex);
+          mycart.splice(itemIndex, 1);
+          const items2 = await client.db("ETI461").collection("Users").updateOne({username: "admin"}, {$set: {cart: mycart}} ) //hard coded for now edit this later
+          res.json(items);
+
+
+        } finally {
+          // Ensures that the client will close when you finish/error
+          await client.close();
+        }
+      }
+      run().catch(console.dir);
+})
  
+app.get('/getCart', (req, res) => {
+    res.statusCode = 200;
+    res.setHeader('Content-type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    const { MongoClient, ServerApiVersion } = require('mongodb');
+    const client = new MongoClient(uri, {
+        serverApi: {
+            version: ServerApiVersion.v1,
+            strict: true,
+            deprecationErrors: true,
+        }
+    });
+
+      async function run() {
+        try {
+          // Connect the client to the server	(optional starting in v4.7)
+          await client.connect();
+          // Send a ping to confirm a successful connection
+          await client.db("ETI461").command({ ping: 1 });
+          console.log("Pinged your deployment. You successfully connected to MongoDB!");
+          const items = await client.db("ETI461").collection("Users").findOne({username: "admin"});//hard coded change later
+          res.json(items.cart);
+        } finally {
+          // Ensures that the client will close when you finish/error
+          await client.close();
+        }
+      }
+      run().catch(console.dir);
+})
+
+app.post('/clearCart', (req, res) => {
+    res.statusCode = 200;
+    res.setHeader('Content-type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    const session = require('express-session');
+    app.use(session({
+        secret: process.env.session_secret,
+        resave: false,
+        saveUninitialized: true
+    }));
+    const { MongoClient, ServerApiVersion } = require('mongodb');
+    const client = new MongoClient(uri, {
+        serverApi: {
+            version: ServerApiVersion.v1,
+            strict: true,
+            deprecationErrors: true,
+        }
+    });
+    async function run() {
+        try {
+          // Connect the client to the server	(optional starting in v4.7)
+          await client.connect();
+          // Send a ping to confirm a successful connection
+          await client.db("ETI461").command({ ping: 1 });
+          console.log("Pinged your deployment. You successfully connected to MongoDB!");
+          user = req.session.user;
+          console.log(user);
+          const items = await client.db("ETI461").collection("Users").findOne({username: "admin"}); //hard coded for now edit this later
+          let mycart = [];
+          const items2 = await client.db("ETI461").collection("Users").updateOne({username: "admin"}, {$set: {cart: mycart}} ) //hard coded for now edit this later
+          res.json(items);
 
 
+        } finally {
+          // Ensures that the client will close when you finish/error
+          await client.close();
+        }
+      }
+      run().catch(console.dir);
+})
 
 app.listen(port, () => {
 

@@ -3,7 +3,7 @@
 <head>
     <link rel = "stylesheet" href = "cssFolder/styles.css">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    
+    <script src = "../backEnd/shoppingCart.js"></script>
 </head>
 
 
@@ -28,6 +28,21 @@
         </ul>
     </nav>
 </header>
+    <div class="container">
+        <h1>Cart:</h1>
+        <div id="cartList"></div>
+    </div>
+
+    <div>
+        <button onclick = "clearCart()">Clear</button>
+        <button onclick = "clearCart()">Check Out</button>
+    </div>
+
+    <script>
+        window.onload = function() {
+            loadTable();
+        };
+    </script>
 <body>
 
 
