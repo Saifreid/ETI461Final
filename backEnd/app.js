@@ -7,6 +7,7 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 const mongoose = require('mongoose');
 const dotenv = require("dotenv").config();
 var bodyParser = require('body-parser');
+let enteredUser;
 
 
 var app = express();
@@ -140,6 +141,7 @@ app.post('/checkLogin', async (req, res) => {
             if (passwordMatch) {
                 console.log(result.username);
                 req.session.user = result.username;
+                enteredUser = result.username;
                 console.log("Session SET");
 
                 // res.cookie("user", result.username, { maxAge: 1000 * 60 * 60 * 24 });
@@ -264,10 +266,10 @@ app.post('/addToCart', (req, res) => {
           console.log("Pinged your deployment. You successfully connected to MongoDB!");
           user = req.session.user;
           console.log(user);
-          const items = await client.db("ETI461").collection("Users").findOne({username: "admin"}); //hard coded for now edit this later
+          const items = await client.db("ETI461").collection("Users").findOne({username: enteredUser}); //hard coded for now edit this later
           let mycart = items.cart;
           mycart.push(req.body);
-          const items2 = await client.db("ETI461").collection("Users").updateOne({username: "admin"}, {$set: {cart: mycart}} ) //hard coded for now edit this later
+          const items2 = await client.db("ETI461").collection("Users").updateOne({username: enteredUser}, {$set: {cart: mycart}} ) //hard coded for now edit this later
           res.json(items);
 
 
@@ -307,7 +309,7 @@ app.post('/removeFromCart', (req, res) => {
           console.log("Pinged your deployment. You successfully connected to MongoDB!");
           user = req.session.user;
           console.log(user);
-          const items = await client.db("ETI461").collection("Users").findOne({username: "admin"}); //hard coded for now edit this later
+          const items = await client.db("ETI461").collection("Users").findOne({username: enteredUser}); //hard coded for now edit this later
           let mycart = items.cart;
           console.log(mycart);
           console.log("this is req body");
@@ -315,7 +317,7 @@ app.post('/removeFromCart', (req, res) => {
           itemIndex = getJsonIndex(mycart ,req.body);
           console.log(itemIndex);
           mycart.splice(itemIndex, 1);
-          const items2 = await client.db("ETI461").collection("Users").updateOne({username: "admin"}, {$set: {cart: mycart}} ) //hard coded for now edit this later
+          const items2 = await client.db("ETI461").collection("Users").updateOne({username: enteredUser}, {$set: {cart: mycart}} ) //hard coded for now edit this later
           res.json(items);
 
 
@@ -347,7 +349,7 @@ app.get('/getCart', (req, res) => {
           // Send a ping to confirm a successful connection
           await client.db("ETI461").command({ ping: 1 });
           console.log("Pinged your deployment. You successfully connected to MongoDB!");
-          const items = await client.db("ETI461").collection("Users").findOne({username: "admin"});//hard coded change later
+          const items = await client.db("ETI461").collection("Users").findOne({username: enteredUser});//hard coded change later
           res.json(items.cart);
         } finally {
           // Ensures that the client will close when you finish/error
@@ -384,9 +386,9 @@ app.post('/clearCart', (req, res) => {
           console.log("Pinged your deployment. You successfully connected to MongoDB!");
           user = req.session.user;
           console.log(user);
-          const items = await client.db("ETI461").collection("Users").findOne({username: "admin"}); //hard coded for now edit this later
+          const items = await client.db("ETI461").collection("Users").findOne({username: enteredUser}); //hard coded for now edit this later
           let mycart = [];
-          const items2 = await client.db("ETI461").collection("Users").updateOne({username: "admin"}, {$set: {cart: mycart}} ) //hard coded for now edit this later
+          const items2 = await client.db("ETI461").collection("Users").updateOne({username: enteredUser}, {$set: {cart: mycart}} ) //hard coded for now edit this later
           res.json(items);
 
 
